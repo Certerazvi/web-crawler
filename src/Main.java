@@ -1,5 +1,8 @@
 public class Main {
+
     public static void main(String[] args) {
-        System.out.println("hei");
+        Spider spider = new Spider();
+        //System.out.println("hei");
+        spider.search("http://www.java2s.com/", "contained ");
     }
 }
