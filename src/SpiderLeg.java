@@ -16,7 +16,7 @@ public class SpiderLeg {
             "Safari/535.1";
     private transient String domain;
     private String url;
-    private Set<String> assets = new HashSet<String>();
+    private Set<String> assets = new HashSet<>();
 
     public SpiderLeg(String domain){
         this.domain = domain;
@@ -32,12 +32,12 @@ public class SpiderLeg {
      */
     public Set<String> crawl(String url, Spider spider) {
         this.url = url;
-        Set<String> urls = new HashSet<String>();
+        Set<String> urls = new HashSet<>();
         //System.out.println("DOmain        " + domain + "\n");
 
         if (url.startsWith(domain)) {
             try {
-                Connection connection = Jsoup.connect(url).timeout(1000)
+                Connection connection = Jsoup.connect(url).timeout(2*1000)
                         .userAgent
                         (USER_AGENT);
                 Document htmlDocument = connection.get();
@@ -47,37 +47,31 @@ public class SpiderLeg {
                 }
 
                 Elements links   = htmlDocument.select("a[href]");
-                Elements media   = htmlDocument.select("[src]");
-                Elements imports = htmlDocument.select("link[href]");
+                Elements media   = htmlDocument.select("img");
+                Elements imports = htmlDocument.select("script");
 
                 System.out.println("Found (" + links.size() + ") links");
                 for (Element link : links) {
+                    //System.out.println("links");
                     if(link.absUrl("abs:href").startsWith(domain)){
-                        if (/*connection.response().contentType().contains
-                                ("text/html") && */!url.contains("/#")) {
+                        if (!link.absUrl("abs:href").contains("/#")) {
                             urls.add(link.absUrl("abs:href"));
-                            //System.out.println(link.absUrl("abs:href") +
-                            // "\n");
                         }
-//                        else {
-//                            assets.add(link.absUrl("href"));
-//                        }
                     }
                 }
 
                 for (Element image : media) {
+                    //System.out.println("media");
                     assets.add(image.absUrl("abs:src"));
                 }
 
                 for (Element image : imports) {
+                    //System.out.println("imports");
                     assets.add(image.absUrl("abs:href"));
                 }
                 spider.setAssets(assets);
                 Gson gson = new Gson();
                 System.out.println(gson.toJson(this));
-                //urls.forEach(System.out::println);
-                //System.out.println(urls.size() + "\n");
-                //urls.forEach(System.out::println);
                 return urls;
             } catch (IOException ioe) {
                 // We were not successful in our HTTP request

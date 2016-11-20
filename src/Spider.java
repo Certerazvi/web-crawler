@@ -4,6 +4,9 @@ public class Spider {
     private Set<String> urls = new HashSet<>();
     private Map<String, Set<String>> assets = new HashMap<>();
     private Set<String> remainingLinks = new HashSet<>();
+    private Set<String> visitedUrls = new HashSet<>();
+    private Set<String> urlsToGO = new HashSet<>();
+
 
     public void setAssets(Set<String> assets) {
         remainingLinks = (assets);
@@ -19,23 +22,27 @@ public class Spider {
     public void search(String url) {
         SpiderLeg leg = new SpiderLeg(url);
         while(true) {
-            if(assets.get(url) == null) {
+            //if(assets.get(url) == null) {
                 Set<String> links = leg.crawl(url, this);
                 //System.out.println("hwrw\n");
                 //links.forEach(System.out::println);
                 urls.addAll(links);
-                links.addAll(remainingLinks);
-                assets.put(url, links);
-                urls.remove(url);
-            }
+                //links.addAll(remainingLinks);
+                //assets.put(url, links);
+                visitedUrls.add(url);
+                urlsToGO.addAll(urls);
+                urlsToGO.removeAll(visitedUrls);
+                //System.out.println("hwrw\n");
+           // }
             //System.out.println("\n MATAAAAA");
-            if(urls.isEmpty()){
+            if(urlsToGO.isEmpty()){
                 //System.out.println("\nUrls is empty");
                 break;
             } else {
                 url = nextUrl();
                 //System.out.println("\nNext url");
             }
+            System.out.println(urlsToGO.size());
             //System.out.println("\n MATAAAAA");
         }
         //System.out.println(gson.toJson(this));
@@ -49,7 +56,7 @@ public class Spider {
      */
     private String nextUrl() {
         String nextUrl;
-        Iterator i = urls.iterator();
+        Iterator i = urlsToGO.iterator();
         nextUrl    = i.next().toString();
         return nextUrl;
     }
