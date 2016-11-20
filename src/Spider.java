@@ -1,12 +1,14 @@
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Spider {
-    private static final int MAX_PAGES_TO_SEARCH = 10;
-    private Set<String> pagesVisited             = new HashSet<String>();
-    private List<String> pagesToVisit            = new LinkedList<String>();
+    private Set<String> urls = new HashSet<String>();
+    private Map<String, Set<String>> assets = new HashMap<String,
+            Set<String>>();
+    private Set<String> remainingLinks = new HashSet<String>();
+
+    public void setAssets(Set<String> assets) {
+        remainingLinks = assets;
+    }
 
     /**
      * Our main launching point for the Spider's functionality. Internally it
@@ -14,28 +16,27 @@ public class Spider {
      * (the web page).
      *
      * @param url- The starting point of the spider
-     * @param searchWord - The word or string that you are searching for
      */
-    public void search(String url, String searchWord) {
-        while(this.pagesVisited.size() < MAX_PAGES_TO_SEARCH) {
-            String currentUrl;
-            SpiderLeg leg = new SpiderLeg();
-            if(this.pagesToVisit.isEmpty()) {
-                currentUrl = url;
-                this.pagesVisited.add(url);
-            }else {
-                currentUrl = this.nextUrl();
+    public void search(String url) {
+        while(true) {
+            SpiderLeg leg = new SpiderLeg(url);
+            if(assets.get(url) == null) {
+                Set<String> links = leg.crawl(url, this);
+                urls.addAll(links);
+                links.addAll(remainingLinks);
+                assets.put(url, links);
+                urls.remove(url);
             }
-            leg.crawl(currentUrl); // Lots of stuff happening here. Look at the crawl method in
-            // SpiderLeg
-            boolean success = leg.searchForWord(searchWord);
-            if(success) {
-                System.out.println(String.format("**Success** Word %s found at %s", searchWord, currentUrl));
+            System.out.println("\n MATAAAAA");
+            if(urls.isEmpty()){
                 break;
+            } else {
+                url = nextUrl();
             }
-            this.pagesToVisit.addAll(leg.getLinks());
+            System.out.println("\n MATAAAAA");
         }
-        System.out.println("\n**Done** Visited " + this.pagesVisited.size() + " web page(s)");
+        //System.out.println(gson.toJson(this));
+        System.out.println("\n===== Done =====");
     }
 
     /**
@@ -46,11 +47,8 @@ public class Spider {
      */
     private String nextUrl() {
         String nextUrl;
-        do {
-            nextUrl = this.pagesToVisit.remove(0);
-        } while(this.pagesVisited.contains(nextUrl));
-
-        this.pagesVisited.add(nextUrl);
+        Iterator i = urls.iterator();
+        nextUrl    = i.next().toString();
         return nextUrl;
     }
 }
