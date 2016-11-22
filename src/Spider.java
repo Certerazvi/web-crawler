@@ -1,35 +1,29 @@
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 public class Spider {
     private Set<String> urls = new HashSet<>();
-    private Map<String, Set<String>> assets = new HashMap<>();
-    private Set<String> remainingLinks = new HashSet<>();
     private Set<String> visitedUrls = new HashSet<>();
     private Set<String> urlsToGO = new HashSet<>();
-    private Set<String> links = new HashSet<>();
 
-
-    public void setAssets(Set<String> assets) {
-        remainingLinks = (assets);
-    }
 
     /**
      * Main launching point of the program. It builds the legs of the spider
      * which parse each URL starting from the domain.
      *
      * @param url    - The starting point of the spider(domain)
-     * @param isTest - in order to make this method sutable for testing
+     * @param isTest - in order to make this method suitable for testing
      */
-    private Map<String, Set<String>> search(String url, boolean isTest) {
+    private Set<String> search(String url, boolean isTest) {
+        Set<String> links;
         System.out.println("[");
         SpiderLeg leg = new SpiderLeg(url);
         do {
-            links = leg.crawl(url, this);
-
+            links = leg.crawl(url);
             urls.addAll(links);
-            links.addAll(remainingLinks);
-            assets.put(url, urls);
 
+            //create the set of urls to be visited in the future
             visitedUrls.add(url);
             urlsToGO.addAll(urls);
             urlsToGO.removeAll(visitedUrls);
@@ -41,17 +35,20 @@ public class Spider {
             }
         } while(isTest);
         System.out.println("]");
-        return assets;
+        return urls;
     }
 
-    public Map<String, Set<String>> search(String url){
+    /**
+     * Creates the json. This method is called in Main.
+     */
+    public Set<String> search(String url){
         return search(url, true);
     }
 
     /**
-     * Returns the assets for searching just the domain.
+     * Returns the assets for searching just the domain (for testing).
      */
-    public Map<String, Set<String>> searchOneLevel(String url){
+    public Set<String> searchOneLevel(String url){
         return search(url, false);
     }
 

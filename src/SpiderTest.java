@@ -8,6 +8,6 @@ public class SpiderTest {
 
         // asserts that there are 42 new links to visit from url page
         // they are later tested to check of they were already visited
-        assertEquals(42, spider.searchOneLevel(url).get(url).size());
+        assertEquals(42, spider.searchOneLevel(url).size());
     }
 }
