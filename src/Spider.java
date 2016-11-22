@@ -6,6 +6,7 @@ public class Spider {
     private Set<String> remainingLinks = new HashSet<>();
     private Set<String> visitedUrls = new HashSet<>();
     private Set<String> urlsToGO = new HashSet<>();
+    private Set<String> links = new HashSet<>();
 
 
     public void setAssets(Set<String> assets) {
@@ -13,46 +14,49 @@ public class Spider {
     }
 
     /**
-     * Our main launching point for the Spider's functionality. Internally it
-     * creates spider legs that make an HTTP request and parse the response
-     * (the web page).
+     * Main launching point of the program. It builds the legs of the spider
+     * which parse each URL starting from the domain.
      *
-     * @param url- The starting point of the spider
+     * @param url    - The starting point of the spider(domain)
+     * @param isTest - in order to make this method sutable for testing
      */
-    public void search(String url) {
+    private Map<String, Set<String>> search(String url, boolean isTest) {
+        System.out.println("[");
         SpiderLeg leg = new SpiderLeg(url);
-        while(true) {
-            //if(assets.get(url) == null) {
-                Set<String> links = leg.crawl(url, this);
-                //System.out.println("hwrw\n");
-                //links.forEach(System.out::println);
-                urls.addAll(links);
-                //links.addAll(remainingLinks);
-                //assets.put(url, links);
-                visitedUrls.add(url);
-                urlsToGO.addAll(urls);
-                urlsToGO.removeAll(visitedUrls);
-                //System.out.println("hwrw\n");
-           // }
-            //System.out.println("\n MATAAAAA");
+        do {
+            links = leg.crawl(url, this);
+
+            urls.addAll(links);
+            links.addAll(remainingLinks);
+            assets.put(url, urls);
+
+            visitedUrls.add(url);
+            urlsToGO.addAll(urls);
+            urlsToGO.removeAll(visitedUrls);
+
             if(urlsToGO.isEmpty()){
-                //System.out.println("\nUrls is empty");
                 break;
             } else {
                 url = nextUrl();
-                //System.out.println("\nNext url");
             }
-            System.out.println(urlsToGO.size());
-            //System.out.println("\n MATAAAAA");
-        }
-        //System.out.println(gson.toJson(this));
+        } while(isTest);
+        System.out.println("]");
+        return assets;
+    }
+
+    public Map<String, Set<String>> search(String url){
+        return search(url, true);
     }
 
     /**
-     * Returns the next URL to visit (in the order that they were found).
-     * We also do a check to make sure this method doesn't return a URL that has already been visited.
-     *
-     * @return
+     * Returns the assets for searching just the domain.
+     */
+    public Map<String, Set<String>> searchOneLevel(String url){
+        return search(url, false);
+    }
+
+    /**
+     * Return the next url in the list of urls that should be visited.
      */
     private String nextUrl() {
         String nextUrl;
