@@ -50,7 +50,7 @@ public class SpiderLeg {
 
                 // add the new links to visit
                 for (Element link : links) {
-                    if(link.attr("abs:href").startsWith(domain)){
+                    if (link.attr("abs:href").startsWith(domain)){
                         // check remove link which are anchors
                         if (!link.attr("abs:href").contains("#")) {
                             urls.add(link.attr("abs:href"));
@@ -65,7 +65,7 @@ public class SpiderLeg {
 
                 //create the json
                 Gson gson = new Gson();
-                if(url.equals(domain)){
+                if (url.equals(domain)){
                     System.out.println(gson.toJson(this));
                 } else {
                     System.out.println("," + gson.toJson(this));

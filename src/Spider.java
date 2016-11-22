@@ -28,12 +28,12 @@ public class Spider {
             urlsToGO.addAll(urls);
             urlsToGO.removeAll(visitedUrls);
 
-            if(urlsToGO.isEmpty()){
+            if (urlsToGO.isEmpty()){
                 break;
             } else {
                 url = nextUrl();
             }
-        } while(isTest);
+        } while (isTest);
         System.out.println("]");
         return urls;
     }
