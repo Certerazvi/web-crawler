@@ -3,9 +3,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Spider {
-    private Set<String> urls = new HashSet<>();
+    private Set<String> urls        = new HashSet<>();
     private Set<String> visitedUrls = new HashSet<>();
-    private Set<String> urlsToGO = new HashSet<>();
+    private Set<String> urlsToGO    = new HashSet<>();
 
 
     /**
